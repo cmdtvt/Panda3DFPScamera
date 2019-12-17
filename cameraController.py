@@ -5,13 +5,12 @@ https://github.com/cmdtvt/Panda3DFPScamera
 
 '''
 from math import pi, sin, cos
-from panda3d.core import MeshDrawer, NodePath
 
 class FPScamera():
     def __init__(self,map,base):
 
         
-        self.debug = True
+        self.debug = False
         self.cameraSpeed = 30
         self.testlockx = 0
         self.testlocky = 0
@@ -91,7 +90,8 @@ class FPScamera():
             if self.debug == True:
                 self.print("Less Speed!")
         else:
-            self.print("Error in SpeedControl!")
+            if self.debug == True:
+                self.print("Error in SpeedControl!")
 
     #### This is the actual camera ####
     def cameraControl(self,):
@@ -112,28 +112,38 @@ class FPScamera():
 
             #### Checks up and down movement ####
             if mpos[1] <= 0.0000 or mpos[1] >= 0.0000:
-                print("Going Down")
+                if self.debug == True:
+                    print("Going Down")
                 self.testlocky += (mpos[1]*self.sensitivity)
                 base.camera.setP(self.testlocky)
             		
         if(self.keyMap["w"] == True):
             base.camera.setY(base.camera, self.cameraSpeed * dt)
-            print("camera moving forward")
+            if self.debug == True:
+                print("camera moving forward")
         
         elif(self.keyMap["s"] == True):
             base.camera.setY(base.camera, -self.cameraSpeed * dt)
-            print("camera moving backwards")
+            if self.debug == True:
+                print("camera moving backwards")
         
         elif(self.keyMap["a"] == True):
             base.camera.setX(base.camera, -self.cameraSpeed * dt)
-            print("camera moving left")
+            if self.debug == True:
+                print("camera moving left")
         
         elif(self.keyMap["d"] == True):
             base.camera.setX(base.camera, self.cameraSpeed * dt)
-            print("camera moving right")
+            if self.debug == True:
+                print("camera moving right")
 
-    def drawGUI(self,base):
-        pass;
+    def toggleDebug(self,):
+        if self.debug == False:
+            self.debug = True
+        else:
+            self.debug = False
+        print("Toggled debug to: "+str(self.debug))
+        
 
 
 
