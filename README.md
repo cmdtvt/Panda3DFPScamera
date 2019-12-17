@@ -38,7 +38,7 @@ class Game(DirectObject):
 g = Game()
 run()
 ``` 
-Example file is provied also. It has no objects to show camera easily but it works.
+Example file is provied also. It has no objects to show camera easily but it works. If moving the camera keeps spazzing it's view weirdly check if you have dissabled Panda3D's own debug camera by using `base.disableMouse()`. Having this option on can cause problems in some cases.
 
 # Controls
 - w, a, s and d to move
