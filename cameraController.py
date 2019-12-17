@@ -13,11 +13,12 @@ class FPScamera():
         
         self.debug = True
         self.cameraSpeed = 30
-        self.testlock = 0
+        self.testlockx = 0
+        self.testlocky = 0
         self.x = 0
         self.y = 0
         self.z = 0
-        self.sensitivity = 0
+        self.sensitivity = 20
         #################################################################################
         #### All allowed keys are stored in dictionary                               ####
         #### If you need to add things to FPS camera you must first add it to keyMap ####
@@ -102,37 +103,19 @@ class FPScamera():
         #### This stuff is executed if mouse is on screen i think ####
         if(base.mouseWatcherNode.hasMouse() == True):
             mpos = base.mouseWatcherNode.getMouse()
-            print(mpos)
-
-
             base.win.movePointer(0, int(self.windowXsize/2) , int(self.windowYSize/2))
 
-            if mpos[0] <= 0.0000:
-                print("Going left")
-                self.testlock += (mpos[0]+self.sensitivity)
-                base.camera.setH(self.testlock)
-                
-            elif mpos[0] >= 0.0000:
-                print("Going right")
-                self.testlock += (mpos[0]+self.sensitivity)
-                base.camera.setH(self.testlock)
+            #### Checks if camera is moving left or right ####
+            if mpos[0] <= 0.0000 or mpos[0] >= 0.0000:
+                self.testlockx -= (mpos[0]*self.sensitivity)
+                base.camera.setH(self.testlockx)
 
-            elif mpos[1] <= -0.9800:
+            #### Checks up and down movement ####
+            if mpos[1] <= 0.0000 or mpos[1] >= 0.0000:
                 print("Going Down")
-
-            elif mpos[1] >= 0.9800:
-                print("Going up")
-            else:
-                base.camera.setP(mpos.getY() * 30)
-                base.camera.setH(mpos.getX() * -70)
-            #self.testlock += 1;
-               
-               
-                
-            
-
-        
-			
+                self.testlocky += (mpos[1]*self.sensitivity)
+                base.camera.setP(self.testlocky)
+            		
         if(self.keyMap["w"] == True):
             base.camera.setY(base.camera, self.cameraSpeed * dt)
             print("camera moving forward")
