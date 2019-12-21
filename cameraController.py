@@ -19,21 +19,27 @@ class FPScamera():
         self.y = 0
         self.z = 0
         self.sensitivity = 20
+
+        #### Camera positioning system ####
+        self.current_camera = 0
+        self.cameras = {'testingcamera': {'position': [0.0, 0.0, 0.0], 'roatation': 'allowed'}}
+        
         #################################################################################
         #### All allowed keys are stored in dictionary                               ####
         #### If you need to add things to FPS camera you must first add it to keyMap ####
         #################################################################################
-        self.keyMap = {"w" : False, "s" : False, "a" : False, "d" : False,"lalt": False}
+        self.keyMap = {"w" : False, "s" : False, "a" : False, "d" : False,"lalt": False,"lshift": False,"space": False, "n" : False, "m" : False, "b" : False}
         self.map = map
 
-        print(self.map.get_mapped_button("lalt"))
+        print(self.map.get_mapped_button("space"))
         self.w_button = self.map.get_mapped_button("w")
         self.a_button = self.map.get_mapped_button("a")
         self.s_button = self.map.get_mapped_button("s")
         self.d_button = self.map.get_mapped_button("d")
+        self.b_button = self.map.get_mapped_button("b")
         self.lalt_button = self.map.get_mapped_button("lalt")
-
-        #### Because of some reason this is a camera object?!? ####
+        self.lshift_button = self.map.get_mapped_button("lshift")
+        self.space_button = self.map.get_mapped_button("space")
 
 
         self.windowXsize = base.win.getXSize()
@@ -45,6 +51,11 @@ class FPScamera():
             if self.debug == True:
                 self.print("Button: "+str(self.w_button)+" is pressed")
 
+        if base.mouseWatcherNode.is_button_down("mouse1"):
+            self.speedControl("more")
+            
+        if base.mouseWatcherNode.is_button_down("mouse3"):
+            self.speedControl("less")
 
         #### Toggles True or False if key is pressed. this is saved into self.keyMap ####
         #### W ####
@@ -76,8 +87,19 @@ class FPScamera():
             self.setKey("lalt", True)
         else:
             self.setKey("lalt", False)
-            
-            
+
+        #### LEFT SHIFT ####
+        if base.mouseWatcherNode.is_button_down(self.lshift_button):
+            self.setKey("lshift", True)
+        else:
+            self.setKey("lshift", False)
+
+        #### SPACEBAR ####
+        if base.mouseWatcherNode.is_button_down(self.space_button):
+            self.setKey("space", True)
+        else:
+            self.setKey("space", False)
+                    
     def print(self,text):
         print("####FPScamera: "+str(text))
 
@@ -89,17 +111,20 @@ class FPScamera():
     def speedControl(self,mole):
         speedamount = 10
         if mole == "more":
-            self.speed += speedamount
+            self.cameraSpeed += speedamount
             if self.debug == True:
                 self.print("More Speed!")
                 
         elif mole == "less":
-            self.speed -= speedamount
+            self.cameraSpeed -= speedamount
             if self.debug == True:
                 self.print("Less Speed!")
         else:
             if self.debug == True:
                 self.print("Error in SpeedControl!")
+
+        if self.cameraSpeed < 0:
+            self.cameraSpeed = 0
 
     #### This is the actual camera ####
     def cameraControl(self,):
@@ -107,16 +132,13 @@ class FPScamera():
         self.windowXsize = base.win.getXSize()
         self.windowYSize = base.win.getYSize()
 
-
-
         if (self.keyMap["lalt"] == True):
             self.mouseInUse = False
         else:
             base.win.movePointer(0, int(self.windowXsize/2) , int(self.windowYSize/2))
             self.mouseInUse = True
-            
 
-        
+            
         #### This stuff is executed if mouse is on screen i think ####
         if(base.mouseWatcherNode.hasMouse() == True):
             mpos = base.mouseWatcherNode.getMouse()
@@ -132,12 +154,10 @@ class FPScamera():
 
                 #### Checks up and down movement ####
                 if mpos[1] <= 0 or mpos[1] >= 0:
-                    if self.debug == True:
-                        print("Going Down")
                     self.testlocky += (mpos[1]*self.sensitivity)
                     base.camera.setP(self.testlocky)
+
             
-            		
         if(self.keyMap["w"] == True):
             base.camera.setY(base.camera, self.cameraSpeed * dt)
             if self.debug == True:
@@ -157,8 +177,31 @@ class FPScamera():
             base.camera.setX(base.camera, self.cameraSpeed * dt)
             if self.debug == True:
                 print("camera moving right")
+                
+        if(self.keyMap["lshift"] == True):
+            base.camera.setZ(base.camera, -self.cameraSpeed * dt)
+            if self.debug == True:
+                print("camera moving down")
 
+        if(self.keyMap["space"] == True):
+            base.camera.setZ(base.camera, self.cameraSpeed * dt)
+            if self.debug == True:
+                print("camera moving up")
+                
+
+    def saveCamera(self,name):
+        self.cameras[name] = {"position" : [base.camera.getX(),base.camera.getY(),base.camera.getZ()],"roatation":"allowed"}
+        print(self.cameras)
+
+    def loadCamera(self,name):
+        cameraInfo = self.cameras[name]
+        base.camera.setX(base.camera,cameraInfo["position"][0])
+        base.camera.setY(base.camera,cameraInfo["position"][1])
+        base.camera.setZ(base.camera,cameraInfo["position"][2])
+        if self.debug == True:
+            print("Camera: "+name+" loaded!")
         
+    
 
     def toggleDebug(self,):
         if self.debug == False:
