@@ -53,4 +53,6 @@ Example file is provied also. It has no objects to show camera easily but it wor
 - `speedControl(mole)`: Changes camera movement speed with keyboard. Supply more or less string as a variable to change speed.
 - `cameraControl()`: Manages the rotation of the camera also moves the camera if Key value is True so if wanted key is pressed.
 - `toggleDebug()`: Toggles camera debug info printing.
-- ´freeMouse()´: Toggles if mouse can be moved freely in the program window. When this is active `cameraControl()` dissables the movement of the camera (the view) at the same time.
+- `freeMouse()`: Toggles if mouse can be moved freely in the program window. When this is active `cameraControl()` dissables the movement of the camera (the view) at the same time.
+- `saveCamera(name)`: Saves camera position and information to a list. Name is the name wich the camera is saved with.
+- `loadCamera(name)`: Restores / loads camera to a saved position
