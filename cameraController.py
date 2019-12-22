@@ -8,9 +8,8 @@ from math import pi, sin, cos
 
 class FPScamera():
     def __init__(self,map,base):
-
         
-        self.debug = False
+        self.debug = True
         self.mouseInUse = True #### If false releases the mouse so it can be moved freely
         self.cameraSpeed = 30
         self.testlockx = 0
@@ -23,6 +22,8 @@ class FPScamera():
         #### Camera positioning system ####
         self.current_camera = 0
         self.cameras = {'testingcamera': {'position': [0.0, 0.0, 0.0], 'roatation': 'allowed'}}
+        if self.debug == True:
+            self.print("Saved camera positions: "+str(self.cameras))
         
         #################################################################################
         #### All allowed keys are stored in dictionary                               ####
@@ -31,7 +32,7 @@ class FPScamera():
         self.keyMap = {"w" : False, "s" : False, "a" : False, "d" : False,"lalt": False,"lshift": False,"space": False, "n" : False, "m" : False, "b" : False}
         self.map = map
 
-        print(self.map.get_mapped_button("space"))
+        self.print(self.map.get_mapped_button("space"))
         self.w_button = self.map.get_mapped_button("w")
         self.a_button = self.map.get_mapped_button("a")
         self.s_button = self.map.get_mapped_button("s")
@@ -41,9 +42,15 @@ class FPScamera():
         self.lshift_button = self.map.get_mapped_button("lshift")
         self.space_button = self.map.get_mapped_button("space")
 
-
         self.windowXsize = base.win.getXSize()
         self.windowYSize = base.win.getYSize()
+
+    def checkKeyPressed(self,button,key):
+        #### Toggles value in self.keyMap to true or false depending if key is pressed down.
+        if base.mouseWatcherNode.is_button_down(button):
+            self.setKey(key,True)
+        else:
+            self.setKey(key,False)
         
     #### Keyboard checks ####
     def checkButton(self,base):
@@ -57,51 +64,20 @@ class FPScamera():
         if base.mouseWatcherNode.is_button_down("mouse3"):
             self.speedControl("less")
 
-        #### Toggles True or False if key is pressed. this is saved into self.keyMap ####
-        #### W ####
-        if base.mouseWatcherNode.is_button_down(self.w_button):
-            self.setKey("w", True)
-        else:
-            self.setKey("w", False)
+        ### Run key checks and toggles ####
+        self.checkKeyPressed(self.w_button,"w")
+        self.checkKeyPressed(self.a_button,"a")
+        self.checkKeyPressed(self.s_button,"s")
+        self.checkKeyPressed(self.d_button,"d")
 
-        #### A ####
-        if base.mouseWatcherNode.is_button_down(self.a_button):
-            self.setKey("a", True)
-        else:
-            self.setKey("a", False)
-            
-        #### S ####
-        if base.mouseWatcherNode.is_button_down(self.s_button):
-            self.setKey("s", True)
-        else:
-            self.setKey("s", False)
-            
-        #### D ####
-        if base.mouseWatcherNode.is_button_down(self.d_button):
-            self.setKey("d", True)
-        else:
-            self.setKey("d", False)
+        self.checkKeyPressed(self.lshift_button,"lshift")
+        self.checkKeyPressed(self.space_button,"space")
 
-        #### LEFT ALT ####
-        if base.mouseWatcherNode.is_button_down(self.lalt_button):
-            self.setKey("lalt", True)
-        else:
-            self.setKey("lalt", False)
+        self.checkKeyPressed(self.lalt_button,"lalt")
 
-        #### LEFT SHIFT ####
-        if base.mouseWatcherNode.is_button_down(self.lshift_button):
-            self.setKey("lshift", True)
-        else:
-            self.setKey("lshift", False)
-
-        #### SPACEBAR ####
-        if base.mouseWatcherNode.is_button_down(self.space_button):
-            self.setKey("space", True)
-        else:
-            self.setKey("space", False)
                     
     def print(self,text):
-        print("####FPScamera: "+str(text))
+        print("[FPScamera]: "+str(text))
 
     #### This changes keys value in self.keyMap ####
     def setKey(self, key, value):
@@ -161,32 +137,32 @@ class FPScamera():
         if(self.keyMap["w"] == True):
             base.camera.setY(base.camera, self.cameraSpeed * dt)
             if self.debug == True:
-                print("camera moving forward")
+                self.print("camera moving forward")
         
         if(self.keyMap["s"] == True):
             base.camera.setY(base.camera, -self.cameraSpeed * dt)
             if self.debug == True:
-                print("camera moving backwards")
+                self.print("camera moving backwards")
         
         if(self.keyMap["a"] == True):
             base.camera.setX(base.camera, -self.cameraSpeed * dt)
             if self.debug == True:
-                print("camera moving left")
+                self.print("camera moving left")
         
         if(self.keyMap["d"] == True):
             base.camera.setX(base.camera, self.cameraSpeed * dt)
             if self.debug == True:
-                print("camera moving right")
+                self.print("camera moving right")
                 
         if(self.keyMap["lshift"] == True):
             base.camera.setZ(base.camera, -self.cameraSpeed * dt)
             if self.debug == True:
-                print("camera moving down")
+                self.print("camera moving down")
 
         if(self.keyMap["space"] == True):
             base.camera.setZ(base.camera, self.cameraSpeed * dt)
             if self.debug == True:
-                print("camera moving up")
+                self.print("camera moving up")
                 
 
     def saveCamera(self,name):
@@ -199,24 +175,23 @@ class FPScamera():
         base.camera.setY(base.camera,cameraInfo["position"][1])
         base.camera.setZ(base.camera,cameraInfo["position"][2])
         if self.debug == True:
-            print("Camera: "+name+" loaded!")
+            self.print("Camera: "+name+" loaded!")
         
     
-
     def toggleDebug(self,):
         if self.debug == False:
             self.debug = True
         else:
             self.debug = False
-        print("Toggled debug to: "+str(self.debug))
+        self.print("Toggled debug to: "+str(self.debug))
 
     def freeMouse(self,):
         if self.mouseInUse == False:
             self.mouseInUse = True
-            print("Mouse is free.")
+            self.print("Mouse is free.")
         else:
             self.mouseInUse = False
-            print("Mouse Locked.")
+            self.print("Mouse Locked.")
         
         
 
