@@ -56,3 +56,4 @@ Example file is provied also. It has no objects to show camera easily but it wor
 - `freeMouse()`: Toggles if mouse can be moved freely in the program window. When this is active `cameraControl()` dissables the movement of the camera (the view) at the same time.
 - `saveCamera(name)`: Saves camera position and information to a list. Name is the name wich the camera is saved with.
 - `loadCamera(name)`: Restores / loads camera to a saved position
+- `checkKeyPressed(button,key)`: Used inside the class to manage if key is pressed down. Toggles the value in `self.keyMap`.
